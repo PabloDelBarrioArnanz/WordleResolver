@@ -30,7 +30,7 @@ async function start() {
         .then(pg => tryLoop(browser, pg, 5))
 
     await delay(5000)
-    await page.screenshot({path: ("fail_" + new Date().toISOString().split('T')[0] + ".png")})
+    await page.screenshot({path: ("./results/fail_" + new Date().toISOString().split('T')[0] + ".png")})
     //await rl.close()
     await browser.close()
 }
@@ -46,8 +46,8 @@ async function tryLoop(browser, page, index) {
 
 async function writteWord(page, word) {
   if (word == undefined) {
-    console.log("Word not found!")
-    return
+    console.log("Word not found! Any word matchs")
+    this.process.exit(1)
   }
   console.log("Possible word: " + word)
   const letters = Array.from(word)
@@ -158,21 +158,27 @@ async function possibleWords(index) {
         for await (const word of rl) {
             if(word.startsWith(startsWith) && word.endsWith(endsWith) &&
                 contains.every(letter => word.split('').includes(letter)) && !notContains.some(letter => word.split('').includes(letter)) &&
-                await checkWordPosition(word.split(''), index-1)) {
+                await checkWordPosition(word.split(''), index)) {
                     palabras.push(word)
-            } 
+            }
         }
-        return palabras[0]
-        
+        console.log("Found " + palabras.length + " possible words")
+        if (palabras.length > 1) {
+            return palabras[Math.floor(Math.random() * palabras.length)]
+        } else {
+            return palabras[0]
+        }
     }
 }
 
 async function checkWordPosition(letters, index) {
-    for (i = 0; i < letters.length; i++) {
-        if (letters[i] == matrix[index][i][0] && (matrix[index][i][1] == "yellow" || matrix[index][i][1] == "gray"))
-            return false
-        if (letters[i] != matrix[index][i][0] && matrix[index][i][1] == "green")
-            return false
+    for(row = 0; row < index; row++) {
+        for (i = 0; i < letters.length; i++) {
+            if (letters[i] == matrix[row][i][0] && (matrix[row][i][1] == "yellow" || matrix[row][i][1] == "gray"))
+                return false
+            if (letters[i] != matrix[row][i][0] && matrix[row][i][1] == "green")
+                return false
+        }
     }
     return true
 }
