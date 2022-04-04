@@ -19,7 +19,7 @@ async function start() {
     const page = await browser.newPage()
     await page.goto("https://wordle.danielfrg.com/")
     
-    //await clickButton(page, "¡Jugar!")
+    await clickButton(page, "¡Jugar!")
     await delay(5000);
 
     await tryLoop(browser, page, 0)
@@ -47,6 +47,7 @@ async function tryLoop(browser, page, index) {
 async function writteWord(page, word) {
   if (word == undefined) {
     console.log("Word not found! Any word matchs")
+    await page.screenshot({path: ("./results/fail_any_word_matchs_" + new Date().toISOString().split('T')[0] + ".png")})
     this.process.exit(1)
   }
   console.log("Possible word: " + word)
