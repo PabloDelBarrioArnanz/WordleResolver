@@ -4,7 +4,7 @@ const readline = require('readline');
 
 const delay = ms => new Promise(res => setTimeout(res, ms));
 
-const words5 = "./dict/words5.txt"
+const words5 = "./words5.txt"
 
 
 var matrix
