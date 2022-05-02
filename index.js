@@ -19,6 +19,7 @@ async function start() {
     const page = await browser.newPage()
     await page.goto("https://wordle.danielfrg.com/")
     
+    await clickButton(page, "ACEPTO")
     await clickButton(page, "¡Jugar!")
     await delay(5000);
 
@@ -65,19 +66,13 @@ async function clickButton(page, buttonText) {
 }
 
 async function searchResults(browser, page, index) {
-    const results = await page.evaluate(_ => {
-        return Array.from(document.querySelectorAll('div.grid-cols-5'), row => Array.from(row.childNodes, 
-            letterPosition => {
-                const letter = letterPosition.childNodes[0].childNodes[1].childNodes[0]
-                return [letter.textContent,
-                    letter.classList.contains('bg-correct') ? "green" : 
-                        letter.classList.contains('bg-present') ? "yellow" :
-                            letter.classList.contains('bg-absent') ? "gray" : ""
+    const results = await page.evaluate(_ => Array.from(document.querySelectorAll('div.css-ceoe56'),
+        row => Array.from(row.childNodes)
+            .map(letterPosition => letterPosition.childNodes[0].childNodes[1].childNodes[0])
+            .map(letter => [letter.textContent, (letter.className == 'css-8c2l1h' || letter.className == 'css-wdb20v') ? "green" : 
+                letter.className == 'css-100c73o' ? "yellow" :
+                    letter.className == 'css-kxp5ly' ? "gray" : letter.className])))
 
-                ]
-            }))
-        }
-    )
     matrix = results
     console.log(matrix)
     cont = 0
